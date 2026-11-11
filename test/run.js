@@ -21,7 +21,10 @@ exports.open = async (opt = {}) => {
     if (u.includes("/rest/v1/aios_bots")) return route.fulfill({ json: mock.bots(state.over) });
     if (u.includes("/rest/v1/aios_decisions")) return route.fulfill({ json: state.dec });
     if (u.includes("/rest/v1/")) return route.fulfill({ json: [] });
-    if (u.includes("/functions/v1/")) { state.writes.push(route.request().postData()); return route.fulfill({ status:401, json:{} }); }
+    if (u.includes("/functions/v1/")) { const body = route.request().postData(); state.writes.push(body);
+      if (!opt.unlocked) return route.fulfill({ status:401, json:{} });
+      const j = JSON.parse(body); if (j.action === "resolve") state.dec = state.dec.filter(d => d.id !== j.id);
+      return route.fulfill({ json:{ owner:true, data:[] } }); }
     return route.abort(); });
   if (opt.init) await page.addInitScript(opt.init);
   await page.goto(`http://localhost:${port}/` + (opt.hash || ""));

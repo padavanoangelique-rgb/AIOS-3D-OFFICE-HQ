@@ -126,11 +126,13 @@ export function createBots(office) {
     items.clear();
   }
   /* When zoomed out, name tags would overlap, so they collapse to status dots (see office.css). */
-  const overlay = document.querySelector("#office3d .o3-ov"), p0 = new THREE.Vector3(), p1 = new THREE.Vector3(), p2 = new THREE.Vector3();
+  const overlay = document.querySelector("#office3d .o3-ov"), dir = new THREE.Vector3();
   office.onTick(() => {
-    p0.set(9.5, 0, 10).project(office.camera); p1.set(10.5, 0, 10).project(office.camera); p2.set(9.5, 0, 11).project(office.camera);
-    const px = Math.max(Math.abs(p1.x - p0.x), Math.abs(p2.x - p0.x)) * overlay.clientWidth / 2;
-    overlay.classList.toggle("tiny", px < 30);
+    const cam = office.camera;
+    cam.getWorldDirection(dir);
+    const reach = dir.y < -0.01 ? -cam.position.y / dir.y : 60;      // distance to the spot on the floor you are looking at
+    const px = overlay.clientHeight / (2 * reach * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2));   // one floor tile, in pixels
+    overlay.classList.toggle("tiny", px < 26);
   });
   return {
     items,
