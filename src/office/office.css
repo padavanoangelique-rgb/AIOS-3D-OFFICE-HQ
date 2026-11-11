@@ -33,8 +33,10 @@ body.o3d #nav button.on[data-act]{color:var(--dim);background:none;border-color:
 .o3-bub{white-space:normal;width:max-content;max-width:150px;font:500 11px/1.25 var(--sans);color:#1b1030;background:#f3ecff;border-radius:9px;padding:5px 8px;box-shadow:0 3px 0 rgba(0,0,0,.35);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .o3-bub.dim{background:#3a2b5c;color:#cfc3e6;box-shadow:none}
 .o3-bub.waiting{background:#ffd9dd;outline:2px solid var(--red)}
-.o3-ov.far .o3-bub{max-width:15px;height:13px;padding:0 4px;border-radius:7px;font-size:0;-webkit-line-clamp:1}
-.o3-ov.far .o3-name{font-size:8px;padding:1px 3px}
+/* zoomed out: names shrink to a status dot and speech bubbles to a small blip, so nothing overlaps */
+.o3-ov.tiny .o3-bub{max-width:none;width:16px;height:12px;padding:0;border-radius:6px;font-size:0}
+.o3-ov.tiny .o3-name{font-size:0;line-height:0;padding:3px;border-radius:50%}
+.o3-ov.tiny .o3-name i{display:block;margin:0}
 .o3-ov.vfar .o3-name{display:none}
 .o3-badge{font:700 13px var(--mono);color:#fff;background:var(--red);border:2px solid #fff;border-radius:999px;min-width:26px;height:26px;padding:0 6px;display:flex;align-items:center;justify-content:center;animation:o3glow 1.4s ease-in-out infinite}
 @keyframes o3glow{0%,100%{box-shadow:0 0 6px 1px var(--red)}50%{box-shadow:0 0 20px 7px var(--red)}}
