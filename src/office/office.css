@@ -1,0 +1,49 @@
+/* AIOS 3D office (add-on). Everything is scoped to #office3d and .o3-*; app.css is untouched. */
+#office3d{flex:1;min-height:0;position:relative;overflow:hidden;background:#0a0613;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+body.o3d #main{display:none}
+body.o3d #nav button.on[data-act]{color:var(--dim);background:none;border-color:transparent}
+.o3-host,.o3-ov{position:absolute;inset:0}
+.o3-host canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+.o3-ov{pointer-events:none;overflow:hidden}
+.o3-ov>*{position:absolute;left:0;top:0;white-space:nowrap;will-change:transform}
+
+/* toolbar */
+.o3-bar{position:absolute;left:10px;right:10px;top:10px;display:flex;gap:8px;align-items:center;pointer-events:none}
+.o3-bar>button{pointer-events:auto}
+.o3-sp{flex:1}
+.o3-btn{font:10px var(--px);letter-spacing:.1em;text-transform:uppercase;color:var(--text);background:rgba(19,11,34,.9);border:1px solid var(--line2);border-radius:10px;min-height:44px;min-width:44px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center}
+.o3-btn:active{background:var(--panel2);transform:translateY(1px)}
+.o3-btn.ic{padding:0}
+.o3-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.o3-hint,.o3-load{position:absolute;left:50%;transform:translateX(-50%);font:9px var(--px);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);pointer-events:none;text-align:center;white-space:nowrap}
+.o3-hint{bottom:calc(10px + env(safe-area-inset-bottom));transition:opacity .6s}
+#office3d.used .o3-hint{opacity:0}
+.o3-load{top:50%;color:var(--violet)}
+#office3d.ready .o3-load{display:none}
+
+/* labels that float over the scene */
+.o3-sign{font:10px var(--px);letter-spacing:.1em;color:var(--c,var(--violet));text-shadow:0 0 8px var(--c,var(--violet)),0 1px 0 #0a0613}
+.o3-sign.big{font-size:13px;letter-spacing:.24em}
+.o3-name{font:9px var(--px);letter-spacing:.06em;color:#e6dcf7;background:rgba(10,6,19,.78);border:1px solid var(--line2);border-radius:6px;padding:2px 5px}
+.o3-name.off{color:var(--faint);border-color:var(--line)}
+.o3-name i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;background:var(--faint);vertical-align:1px}
+.o3-name.working i{background:var(--green);box-shadow:0 0 6px var(--green)}
+.o3-name.waiting i{background:var(--red);box-shadow:0 0 6px var(--red)}
+.o3-name.idle i{background:var(--yellow)}
+.o3-bub{white-space:normal;width:max-content;max-width:150px;font:500 11px/1.25 var(--sans);color:#1b1030;background:#f3ecff;border-radius:9px;padding:5px 8px;box-shadow:0 3px 0 rgba(0,0,0,.35);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.o3-bub.dim{background:#3a2b5c;color:#cfc3e6;box-shadow:none}
+.o3-bub.waiting{background:#ffd9dd;outline:2px solid var(--red)}
+.o3-ov.far .o3-bub{max-width:15px;height:13px;padding:0 4px;border-radius:7px;font-size:0;-webkit-line-clamp:1}
+.o3-ov.far .o3-name{font-size:8px;padding:1px 3px}
+.o3-ov.vfar .o3-name{display:none}
+.o3-badge{font:700 13px var(--mono);color:#fff;background:var(--red);border:2px solid #fff;border-radius:999px;min-width:26px;height:26px;padding:0 6px;display:flex;align-items:center;justify-content:center;animation:o3glow 1.4s ease-in-out infinite}
+@keyframes o3glow{0%,100%{box-shadow:0 0 6px 1px var(--red)}50%{box-shadow:0 0 20px 7px var(--red)}}
+
+/* decision sheet (opens from the whiteboard) */
+.o3-sheet{position:absolute;right:10px;top:64px;bottom:10px;width:min(370px,calc(100% - 20px));background:#100920;border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 20px 60px rgba(0,0,0,.6);padding:14px;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;user-select:text;-webkit-user-select:text}
+.o3-sheet h2 .btn{margin-left:auto}
+@media (max-width:720px){
+  .o3-sheet{left:0;right:0;top:auto;bottom:0;width:auto;max-height:72%;border-radius:16px 16px 0 0;border-width:1px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .o3-btn{min-height:42px}
+}
+@media (prefers-reduced-motion:reduce){.o3-badge{animation:none;box-shadow:0 0 12px 3px var(--red)}}
