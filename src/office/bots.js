@@ -147,7 +147,7 @@ export function createBots(office) {
         const it = items.get(b.id);
         if (!it) continue;
         it.bot = b;
-        it.nameEl.className = "o3-name " + (["working", "waiting", "idle"].includes(b.status) ? b.status : "");
+        it.nameEl.className = "o3-name " + (b.status === "working" || b.status === "waiting" || b.status === "idle" ? b.status : "");
       }
       office.relabel();
     },
