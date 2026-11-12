@@ -1,22 +1,25 @@
-/* The city: one building per business. Edit this list to add, rename or move a building. */
+/* The city. Agents work in the HQ office in the middle; around it stands one building per business,
+   holding that business's goals, notes, ideas and materials. Edit BUILDINGS to add, rename or move one. */
 export const PLAT = { grok: "#d9d9e3", claude: "#e8926a", codex: "#7ee0b0", nova: "#b89bff", hermes: "#ffd166", other: "#9a8db5" };
 export const PLAT_NAME = { grok: "Grok", claude: "Claude", codex: "Codex", nova: "Nova", hermes: "Hermes", other: "Other" };
-/* x / z = where the building stands. div = which old dashboard division starts out here (until you move agents yourself). */
+/* x / z = centre of the building, w / d = footprint, h = height.
+   div = which old dashboard division starts out assigned here (until you choose yourself). */
 export const BUILDINGS = [
-  { id: "permitaio", name: "PermitAIO", short: "PermitAIO", c: "#3fe0ff", x: 0, z: -17, div: ["permit"] },
-  { id: "bath", name: "Bath", short: "Bath", c: "#7fe8d2", x: -13.5, z: -27, small: true },
-  { id: "ezbuilder", name: "EZ Permit Builder", short: "EZ Builder", c: "#58c7f3", x: -4.5, z: -27, small: true },
-  { id: "ezforms", name: "EZForms", short: "EZForms", c: "#8fb4ff", x: 4.5, z: -27, small: true },
-  { id: "expediter", name: "Expediter", short: "Expediter", c: "#4dff9a", x: 13.5, z: -27, small: true },
-  { id: "majestic", name: "Majestic Permits", short: "Majestic", c: "#5fc8ff", x: -15, z: -8, div: ["majestic"] },
-  { id: "closer", name: "The Permit Closer", short: "Closer", c: "#ff5f6e", x: 15, z: -8, div: ["closer"] },
-  { id: "lanai", name: "Majestic Lanai", short: "Lanai", sub: "Renew & Repair", c: "#7f9bff", x: -15, z: 9, div: ["lanai"] },
-  { id: "hookreel", name: "Hook & Reel Weekly", short: "Hook & Reel", sub: "Reels + lead generator", c: "#ffc94d", x: 15, z: 9, div: ["mkt"] },
-  { id: "spoiler", name: "Spoiler Therapy", short: "Spoiler", c: "#ff9a4d", x: 0, z: 18, div: ["side"] },
+  { id: "majestic", name: "Majestic Permits", short: "Majestic", c: "#5fc8ff", x: -10, z: -17, w: 6, d: 5, h: 7.5, div: ["majestic"] },
+  { id: "closer", name: "The Permit Closer", short: "Closer", c: "#ff5f6e", x: 0, z: -17, w: 6, d: 5, h: 9, div: ["closer"] },
+  { id: "hookreel", name: "Hook & Reel Weekly", short: "Hook & Reel", sub: "Marketing reels + lead generator", c: "#ffc94d", x: 10, z: -17, w: 6, d: 5, h: 7, div: ["mkt"] },
+  { id: "lanai", name: "Majestic Lanai", short: "Lanai", sub: "Renew & Repair", c: "#7f9bff", x: -19, z: -5, w: 5, d: 6, h: 6, div: ["lanai"] },
+  { id: "spoiler", name: "Spoiler Therapy", short: "Spoiler", c: "#ff9a4d", x: -19, z: 6, w: 5, d: 5, h: 5, div: ["side"] },
+  { id: "permitaio", name: "PermitAIO", short: "PermitAIO", c: "#3fe0ff", x: 19.5, z: -6, w: 6, d: 5, h: 8.5, div: ["permit"] },
+  { id: "bath", name: "Bath", short: "Bath", c: "#7fe8d2", x: 17.6, z: 1.6, w: 3.2, d: 3.2, h: 3.2, small: true },
+  { id: "ezbuilder", name: "EZ Permit Builder", short: "EZ Builder", c: "#58c7f3", x: 21.8, z: 1.6, w: 3.2, d: 3.2, h: 3.6, small: true },
+  { id: "ezforms", name: "EZForms", short: "EZForms", c: "#8fb4ff", x: 17.6, z: 6.6, w: 3.2, d: 3.2, h: 3.4, small: true },
+  { id: "expediter", name: "Expediter", short: "Expediter", c: "#4dff9a", x: 21.8, z: 6.6, w: 3.2, d: 3.2, h: 3, small: true },
 ];
-/* Agents with no building yet wait here, in the middle of the city. */
-export const LOBBY = { id: "lobby", name: "Lobby", short: "Lobby", sub: "Not placed yet", c: "#b98cff", x: 0, z: -5.2 };
-export const PLACES = BUILDINGS.concat(LOBBY);
+export const NONE = { id: "none", name: "No business yet", short: "Unassigned", c: "#8f7fb8" };
+export const PLACES = BUILDINGS.concat(NONE);
+export const placeOfId = id => PLACES.find(p => p.id === id) || NONE;
+export const KINDS = [["goal", "Goals"], ["note", "Notes"], ["idea", "Ideas"], ["material", "Materials"]];
 
 /* Decisions still carry the dashboard's division codes, so the whiteboard needs their names and colours. */
 export const DIV = {

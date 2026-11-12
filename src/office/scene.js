@@ -108,7 +108,7 @@ export function createScene(root) {
   /* Default view: the whole city, as close as the screen allows. */
   function home(snap) {
     const tall = W < H;
-    Object.assign(goal, { tx: (box.x0 + box.x1) / 2, tz: (box.z0 + box.z1) / 2, yaw: tall ? 0 : 0.5, pitch: tall ? 1.02 : 0.82 });
+    Object.assign(goal, { tx: (box.x0 + box.x1) / 2, tz: (box.z0 + box.z1) / 2 + (tall ? 4 : 0), yaw: tall ? 0 : 0.5, pitch: tall ? 1.02 : 0.82 });
     let lo = DMIN, hi = DMAX;
     for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (fits({ ...goal, dist: mid })) hi = mid; else lo = mid; }
     goal.dist = hi;

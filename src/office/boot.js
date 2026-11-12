@@ -19,9 +19,9 @@
   root.id = "office3d";
   root.hidden = true;
   root.innerHTML = `<div class="o3-host"></div><div class="o3-ov"></div>
-    <div class="o3-bar"><button class="o3-btn" data-o3="2d">2D view</button><button class="o3-btn" data-o3="rooms">Rooms</button><span class="o3-sp"></span>
+    <div class="o3-bar"><button class="o3-btn" data-o3="2d">2D view</button><button class="o3-btn" data-o3="team">Team</button><span class="o3-sp"></span>
       <button class="o3-btn ic" data-o3="home" aria-label="Show the whole city">${svg("home")}</button></div>
-    <div class="o3-hint">Tap the ground to walk · tap an agent to talk · pinch to zoom</div>
+    <div class="o3-hint">Tap to walk · tap agents and buildings</div>
     <div class="o3-load">Opening the city…</div>`;
   app.appendChild(root);
 
@@ -58,7 +58,7 @@
     on = true;
     document.body.classList.add("o3d"); root.hidden = false; paintNav();
     if (office) return office.start();
-    loading = loading || import("./main.js").then(m => m.mount(root, { act })).then(o => {
+    loading = loading || import("./main.js").then(m => m.mount(root, { act, say })).then(o => {
       office = o; root.classList.add("ready");
       if (on) office.start();
     }).catch(err => {
