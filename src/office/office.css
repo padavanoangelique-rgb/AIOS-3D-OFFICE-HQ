@@ -2,6 +2,7 @@
 #office3d{flex:1;min-height:0;position:relative;overflow:hidden;background:#0a0613;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 body.o3d #main{display:none}
 body.o3d #nav button.on[data-act]{color:var(--dim);background:none;border-color:transparent}
+#nav button[data-act=view][data-id=city]{display:none}   /* one City button: ours opens the 3D city, "2D view" shows the old one */
 .o3-host,.o3-ov{position:absolute;inset:0}
 .o3-host canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 .o3-ov{pointer-events:none;overflow:hidden}
@@ -25,6 +26,14 @@ body.o3d #nav button.on[data-act]{color:var(--dim);background:none;border-color:
 .o3-sign{font:10px var(--px);letter-spacing:.1em;color:var(--c,var(--violet));text-shadow:0 0 8px var(--c,var(--violet)),0 1px 0 #0a0613}
 .o3-sign.big{font-size:13px;letter-spacing:.24em}
 .o3-name{font:9px var(--px);letter-spacing:.06em;color:#e6dcf7;background:rgba(10,6,19,.78);border:1px solid var(--line2);border-radius:6px;padding:2px 5px}
+.o3-name.you{color:#1b0d05;background:var(--accent);border-color:var(--accent)}
+.o3-bld{display:flex;flex-direction:column;align-items:center;gap:1px;background:rgba(10,6,19,.82);border:1px solid var(--c,var(--line2));border-radius:8px;padding:4px 8px;box-shadow:0 0 12px -4px var(--c)}
+.o3-bld b{font:400 10px var(--px);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--violet))}
+.o3-bld small{font:9px var(--mono);color:var(--dim)}
+.o3-bld .brief,.o3-ov.tiny .o3-bld .full,.o3-ov.tiny .o3-bld small{display:none}
+.o3-ov.tiny .o3-bld .brief{display:inline}
+.o3-ov.tiny .o3-bld{padding:2px 5px}
+.o3-ov.tiny .o3-bld b{font-size:8px;letter-spacing:.02em}
 .o3-name.off{color:var(--faint);border-color:var(--line)}
 .o3-name i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;background:var(--faint);vertical-align:1px}
 .o3-name.working i{background:var(--green);box-shadow:0 0 6px var(--green)}
@@ -40,6 +49,25 @@ body.o3d #nav button.on[data-act]{color:var(--dim);background:none;border-color:
 .o3-ov.vfar .o3-name{display:none}
 .o3-badge{font:700 13px var(--mono);color:#fff;background:var(--red);border:2px solid #fff;border-radius:999px;min-width:26px;height:26px;padding:0 6px;display:flex;align-items:center;justify-content:center;animation:o3glow 1.4s ease-in-out infinite}
 @keyframes o3glow{0%,100%{box-shadow:0 0 6px 1px var(--red)}50%{box-shadow:0 0 20px 7px var(--red)}}
+
+/* level badge, agent card, rooms list */
+.o3-xp{position:absolute;left:10px;top:62px;font:10px var(--px);letter-spacing:.08em;color:var(--yellow);background:rgba(19,11,34,.9);border:1px solid var(--line2);border-radius:999px;padding:6px 10px;pointer-events:none}
+.o3-card{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));width:min(430px,calc(100% - 20px));background:#100920;border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 14px 40px rgba(0,0,0,.6);padding:12px;user-select:text;-webkit-user-select:text}
+.o3-card .hd{display:flex;gap:9px;align-items:center}
+.o3-card p{margin:8px 0 0;font-size:13px;color:var(--text);overflow-wrap:anywhere}
+.o3-card .row{margin-top:10px}
+.o3-card .st{flex:none;width:10px;height:10px;border-radius:50%;background:var(--faint)}
+.o3-card .st.working{background:var(--green);box-shadow:0 0 8px var(--green)}
+.o3-card .st.waiting{background:var(--red);box-shadow:0 0 8px var(--red)}
+.o3-card .st.idle{background:var(--yellow)}
+.who{flex:1;min-width:0;display:flex;flex-direction:column}
+.who b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o3-card .mv{flex:1 1 150px;font:9px var(--px);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:flex;flex-direction:column;gap:3px}
+.o3-card .mv select{font:13px var(--sans);letter-spacing:0;text-transform:none}
+.o3-pick{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.o3-pick select{flex:none;width:46%}
+.o3-sheet p{margin:0 0 8px;font-size:13px}
 
 /* decision sheet (opens from the whiteboard) */
 .o3-sheet{position:absolute;right:10px;top:64px;bottom:10px;width:min(370px,calc(100% - 20px));background:#100920;border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 20px 60px rgba(0,0,0,.6);padding:14px;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;user-select:text;-webkit-user-select:text}

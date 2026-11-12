@@ -1,4 +1,4 @@
-/* AIOS 3D office: switch between the 3D office and the 2D dashboard.
+/* AIOS 3D city: switch between the 3D city and the 2D dashboard.
    Loads after app.js and leaves it alone. The office talks to the dashboard only through the
    dashboard's own buttons (data-act), so chat, to-dos and decisions keep working exactly as before. */
 (() => {
@@ -10,9 +10,7 @@
   let on = false, office = null, loading = null;
 
   const ICON = {
-    office: '<path d="M3 20V9l9-5 9 5v11M3 20h18M9 20v-6h6v6"/>',
-    left: '<path d="M4 5v5h5M4.6 10A8 8 0 1 1 6 17.3"/>',
-    right: '<path d="M20 5v5h-5M19.4 10A8 8 0 1 0 18 17.3"/>',
+    city: '<path d="M3 21V9l6-3v15M9 21V4l6 3v14M15 21V11l6 2v8M2 21h20"/>',
     home: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
   };
   const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>`;
@@ -21,12 +19,10 @@
   root.id = "office3d";
   root.hidden = true;
   root.innerHTML = `<div class="o3-host"></div><div class="o3-ov"></div>
-    <div class="o3-bar"><button class="o3-btn" data-o3="2d">2D view</button><span class="o3-sp"></span>
-      <button class="o3-btn ic" data-o3="left" aria-label="Turn left">${svg("left")}</button>
-      <button class="o3-btn ic" data-o3="home" aria-label="Reset view">${svg("home")}</button>
-      <button class="o3-btn ic" data-o3="right" aria-label="Turn right">${svg("right")}</button></div>
-    <div class="o3-hint">Drag to move · pinch to zoom · twist to turn</div>
-    <div class="o3-load">Opening the office…</div>`;
+    <div class="o3-bar"><button class="o3-btn" data-o3="2d">2D view</button><button class="o3-btn" data-o3="rooms">Rooms</button><span class="o3-sp"></span>
+      <button class="o3-btn ic" data-o3="home" aria-label="Show the whole city">${svg("home")}</button></div>
+    <div class="o3-hint">Tap the ground to walk · tap an agent to talk · pinch to zoom</div>
+    <div class="o3-load">Opening the city…</div>`;
   app.appendChild(root);
 
   /* Press one of the dashboard's own buttons on the office's behalf. */
@@ -41,16 +37,17 @@
   function store(v) { try { localStorage.setItem(PREF, v); } catch (e) { /* private mode */ } }
   function pref() { try { return localStorage.getItem(PREF); } catch (e) { return null; } }
 
-  /* The dashboard redraws its nav often, so put the Office button back whenever it does. */
+  /* One City button: it opens the 3D city, and stays lit for the 2D city too (the dashboard's own
+     City button is hidden in office.css). The dashboard redraws its nav often, so put ours back each time. */
   function paintNav() {
     let b = nav.querySelector("[data-o3=on]");
     if (!b) {
       b = document.createElement("button");
       b.dataset.o3 = "on";
-      b.innerHTML = `${svg("office")}<span>Office</span>`;
+      b.innerHTML = `${svg("city")}<span>City</span>`;
       nav.insertBefore(b, nav.querySelector("button"));
     }
-    b.classList.toggle("on", on);
+    b.classList.toggle("on", on || !!nav.querySelector("[data-act=view][data-id=city].on"));
   }
   new MutationObserver(paintNav).observe(nav, { childList: true });
   paintNav();
@@ -65,9 +62,10 @@
       office = o; root.classList.add("ready");
       if (on) office.start();
     }).catch(err => {
-      console.warn("3D office unavailable:", err);
+      console.warn("3D city unavailable:", err);
       loading = null; exit(false);
-      say("The 3D office could not load here. Showing the 2D view.");
+      say("The 3D city could not load here. Showing the 2D view.");
+      act("view", "city");
     });
   }
   function exit(save) {
@@ -89,10 +87,10 @@
       else if (office) office.command(k, o);
       return;
     }
-    /* Opening a chat or another dashboard page leaves the office (your 3D/2D choice is kept). */
+    /* Opening a chat or another dashboard page leaves the city (your 3D/2D choice is kept). */
     if (on && t.closest("[data-act=view],[data-act=chat],[data-act=div]")) exit(false);
   }, true);
 
-  /* Start in the office unless you chose 2D, or the link points at a specific page. */
+  /* Start in the 3D city unless you chose 2D, or the link points at a specific page. */
   if (pref() !== "0" && !location.hash.slice(1)) enter(false);
 })();

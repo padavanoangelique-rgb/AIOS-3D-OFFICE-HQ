@@ -20,6 +20,7 @@ exports.open = async (opt = {}) => {
     if (u.includes("/build/three.module.min.js")) return route.fulfill({ contentType:"text/javascript", body:fs.readFileSync(path.join(__dirname, "node_modules/three/build/three.module.min.js")), headers:{ "access-control-allow-origin":"*" } });
     if (u.includes("/rest/v1/aios_bots")) return route.fulfill({ json: mock.bots(state.over) });
     if (u.includes("/rest/v1/aios_decisions")) return route.fulfill({ json: state.dec });
+    if (u.includes("/rest/v1/aios_progress")) return route.fulfill({ json: [{ id:1, xp:240, quest:"Clear the queue", quest_done:false }] });
     if (u.includes("/rest/v1/")) return route.fulfill({ json: [] });
     if (u.includes("/functions/v1/")) { const body = route.request().postData(); state.writes.push(body);
       if (!opt.unlocked) return route.fulfill({ status:401, json:{} });

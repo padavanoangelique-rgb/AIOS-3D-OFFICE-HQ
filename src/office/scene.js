@@ -1,9 +1,8 @@
-/* AIOS 3D office: the room, the camera and touch controls.
+/* AIOS 3D city: renderer, camera, touch controls and floating labels.
    Kept cheap for phones: box shapes, two lights, no shadows, and it only redraws when something moves. */
 import * as THREE from "./three.js";
-import { DIV, ROOMS, divColor } from "./data.js";
 
-const BG = 0x0a0613, DMIN = 6, DMAX = 110, EYE = 0.6;
+const BG = 0x0a0613, DMIN = 5, DMAX = 170, EYE = 0.6;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 const unit = new THREE.BoxGeometry(1, 1, 1);
@@ -14,6 +13,7 @@ export function mat(color, glow) {
   if (!mats.has(k)) mats.set(k, glow ? new THREE.MeshBasicMaterial({ color }) : new THREE.MeshLambertMaterial({ color }));
   return mats.get(k);
 }
+/* A single box that can move on its own (characters, screens). */
 export function block(parent, color, w, h, d, x, y, z, glow) {
   const m = new THREE.Mesh(unit, mat(color, glow));
   m.scale.set(w, h, d); m.position.set(x, y, z); parent.add(m);
@@ -21,52 +21,22 @@ export function block(parent, color, w, h, d, x, y, z, glow) {
 }
 export const mix = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t).getHex();
 
-function buildShell(scene, addLabel) {
-  const g = new THREE.Group();
-  scene.add(g);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), mat(0x0d0719));
-  ground.rotation.x = -Math.PI / 2; ground.position.set(9.5, -0.3, 10); g.add(ground);
-  const grid = new THREE.GridHelper(120, 60, 0x2b1c48, 0x1a1030);
-  grid.position.set(9.5, -0.29, 10); g.add(grid);
-
-  block(g, 0x1b1130, 20.4, 0.3, 21.4, 9.5, -0.15, 10);                 // floor slab
-  block(g, 0x5b3da0, 20.5, 0.05, 0.08, 9.5, 0, 20.72, true);           // neon edge, front
-  block(g, 0x5b3da0, 0.08, 0.05, 21.5, 19.72, 0, 10, true);            // neon edge, right
-  block(g, 0x5b3da0, 0.08, 0.05, 21.5, -0.72, 0, 10, true);            // neon edge, left
-
-  block(g, 0x1a1030, 20.4, 4.6, 0.3, 9.5, 2.3, -0.85);                 // back wall
-  block(g, 0xb98cff, 20.4, 0.06, 0.34, 9.5, 4.63, -0.85, true);        // neon cap
-  for (const x of [1.3, 3.7]) {                                        // two night windows
-    block(g, 0x3a2760, 1.7, 1.9, 0.08, x, 2.75, -0.68);
-    block(g, 0x2a1670, 1.5, 1.7, 0.1, x, 2.75, -0.67, true);
-    block(g, 0x3a2760, 0.07, 1.7, 0.12, x, 2.75, -0.66);
-    block(g, 0x3a2760, 1.5, 0.07, 0.12, x, 2.75, -0.66);
-    block(g, 0xffe9a8, 0.09, 0.09, 0.12, x - 0.4, 3.2, -0.66, true);
-    block(g, 0xffffff, 0.06, 0.06, 0.12, x + 0.35, 2.4, -0.66, true);
-  }
-  const hq = document.createElement("div");
-  hq.className = "o3-sign big"; hq.textContent = "AIOS HQ";
-  addLabel(hq, new THREE.Vector3(2.5, 3.85, -0.68));
-
-  const leaf = new THREE.IcosahedronGeometry(0.34, 0);
-  for (const [div, ox, oz, w, d] of ROOMS) {
-    const c = divColor(div), cx = ox + w / 2, cz = oz + d / 2;
-    block(g, mix(0x170e2b, c, 0.1), w, 0.04, d, cx, 0.02, cz);                       // floor
-    block(g, mix(0x170e2b, c, 0.26), w - 1.2, 0.02, 0.9, cx, 0.05, oz + 3);         // rug
-    block(g, mix(0x170e2b, c, 0.5), w, 0.03, 0.05, cx, 0.045, oz + d);              // floor edges
-    block(g, mix(0x170e2b, c, 0.5), 0.05, 0.03, d, ox + w, 0.045, cz);
-    const glass = new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.13, depthWrite: false });
-    const back = new THREE.Mesh(unit, glass); back.scale.set(w, 1.3, 0.06); back.position.set(cx, 0.65, oz); g.add(back);
-    const side = new THREE.Mesh(unit, glass); side.scale.set(0.06, 1.3, d); side.position.set(ox, 0.65, cz); g.add(side);
-    block(g, c, w, 0.05, 0.08, cx, 1.32, oz, true);                                 // neon tops
-    block(g, c, 0.08, 0.05, d, ox, 1.32, cz, true);
-    block(g, 0x3b2a1c, 0.34, 0.4, 0.34, ox + w - 0.5, 0.2, oz + 0.5);               // plant
-    const l1 = new THREE.Mesh(leaf, mat(0x2fbf71)); l1.position.set(ox + w - 0.5, 0.72, oz + 0.5); g.add(l1);
-    const l2 = new THREE.Mesh(leaf, mat(0x4dff9a)); l2.scale.setScalar(0.6); l2.position.set(ox + w - 0.62, 0.98, oz + 0.42); g.add(l2);
-    const sign = document.createElement("div");
-    sign.className = "o3-sign"; sign.style.setProperty("--c", c); sign.textContent = (DIV[div] || {}).s || div;
-    addLabel(sign, new THREE.Vector3(cx, 1.45, oz));
-  }
+/* Boxes that never move (floors, walls, desks) are collected here and drawn in a few big batches. */
+export function batcher() {
+  const list = [];
+  return {
+    add(color, w, h, d, x, y, z, glow, turn) { list.push([color, w, h, d, x, y, z, glow ? 1 : 0, turn || 0]); },
+    build(parent) {
+      const by = new Map(), o = new THREE.Object3D();
+      for (const f of list) { const k = f[0] + "/" + f[7]; if (!by.has(k)) by.set(k, []); by.get(k).push(f); }
+      for (const items of by.values()) {
+        const im = new THREE.InstancedMesh(unit, mat(items[0][0], items[0][7]), items.length);
+        items.forEach((f, i) => { o.scale.set(f[1], f[2], f[3]); o.position.set(f[4], f[5], f[6]); o.rotation.y = f[8]; o.updateMatrix(); im.setMatrixAt(i, o.matrix); });
+        im.frustumCulled = false;
+        parent.add(im);
+      }
+    },
+  };
 }
 
 export function createScene(root) {
@@ -82,11 +52,19 @@ export function createScene(root) {
   host.appendChild(el);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(BG, 70, 190);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.5, 400);
+  scene.fog = new THREE.Fog(BG, 90, 260);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.5, 500);
   scene.add(new THREE.HemisphereLight(0xd9c8ff, 0x24163f, 2.6));
   const sun = new THREE.DirectionalLight(0xffe6cf, 1.6);
   sun.position.set(6, 18, 14); scene.add(sun);
+
+  const picks = [];
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), mat(0x0d0719));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.3; scene.add(ground);
+  const grid = new THREE.GridHelper(300, 100, 0x2b1c48, 0x1a1030);
+  grid.position.y = -0.29; scene.add(grid);
+  const walkable = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshBasicMaterial({ visible: false }));
+  walkable.rotation.x = -Math.PI / 2; walkable.userData.tap = { ground: true }; scene.add(walkable); picks.push(walkable);
 
   /* ---- labels (plain HTML floating over the canvas, so the pixel font stays crisp) ---- */
   const labels = [], v = new THREE.Vector3();
@@ -98,9 +76,9 @@ export function createScene(root) {
   }
   function removeLabel(L) { const i = labels.indexOf(L); if (i >= 0) labels.splice(i, 1); L.el.remove(); }
   function layoutLabels() {
-    const ppu = H / (2 * cur.dist * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
-    overlay.classList.toggle("far", ppu < 15);
-    overlay.classList.toggle("vfar", ppu < 8);
+    /* how big one floor tile is on screen where you are looking; small = zoomed out */
+    const px = H / (2 * cur.dist * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
+    overlay.classList.toggle("tiny", px < 26);
     for (const L of labels) {
       v.copy(L.pos).project(camera);
       const ok = !L.hidden && v.z < 1 && Math.abs(v.x) < 1.15 && Math.abs(v.y) < 1.15;
@@ -110,27 +88,27 @@ export function createScene(root) {
     labelsDirty = false;
   }
 
-  buildShell(scene, addLabel);
-
   /* ---- camera: a point on the floor we look at, plus turn / tilt / distance ---- */
-  const goal = { tx: 9.5, tz: 9.6, yaw: 0, pitch: 1, dist: 40 }, cur = { ...goal };
-  let pristine = true, lastInput = 0;
+  const goal = { tx: 0, tz: 0, yaw: 0, pitch: 1, dist: 60 }, cur = { ...goal };
+  let box = { x0: -20, x1: 20, z0: -20, z1: 20 }, pristine = true, lastInput = 0;
   function place(c) {
     const cp = Math.cos(c.pitch);
     camera.position.set(c.tx + c.dist * Math.sin(c.yaw) * cp, EYE + c.dist * Math.sin(c.pitch), c.tz + c.dist * Math.cos(c.yaw) * cp);
     camera.lookAt(c.tx, EYE, c.tz);
     camera.updateMatrixWorld();
   }
-  const corners = [];
-  for (const x of [-0.7, 19.7]) { corners.push([x, 0, 20.7], [x, 0, -1], [x, 4.7, -1]); }
   function fits(c) {
     place(c);
-    return corners.every(p => { v.set(p[0], p[1], p[2]).project(camera); return Math.abs(v.x) < 0.95 && v.y > -0.93 && v.y < (H < 520 ? 0.72 : 0.82); });
+    for (const x of [box.x0, box.x1]) for (const z of [box.z0, box.z1]) for (const y of [0, 2.6]) {
+      v.set(x, y, z).project(camera);
+      if (Math.abs(v.x) > 0.96 || v.y < -0.94 || v.y > (H < 520 ? 0.74 : 0.84)) return false;
+    }
+    return true;
   }
-  /* Default view: the whole office, as close as the screen allows. */
+  /* Default view: the whole city, as close as the screen allows. */
   function home(snap) {
     const tall = W < H;
-    Object.assign(goal, { tx: 9.5, tz: 9.6, yaw: tall ? 0 : 0.42, pitch: tall ? 1.02 : 0.8 });
+    Object.assign(goal, { tx: (box.x0 + box.x1) / 2, tz: (box.z0 + box.z1) / 2, yaw: tall ? 0 : 0.5, pitch: tall ? 1.02 : 0.82 });
     let lo = DMIN, hi = DMAX;
     for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (fits({ ...goal, dist: mid })) hi = mid; else lo = mid; }
     goal.dist = hi;
@@ -138,8 +116,8 @@ export function createScene(root) {
     dirty = true;
   }
   function limit() {
-    goal.tx = clamp(goal.tx, -1, 20); goal.tz = clamp(goal.tz, -1, 21);
-    goal.yaw = clamp(goal.yaw, -1.25, 1.25); goal.pitch = clamp(goal.pitch, 0.42, 1.4); goal.dist = clamp(goal.dist, DMIN, DMAX);
+    goal.tx = clamp(goal.tx, box.x0 - 3, box.x1 + 3); goal.tz = clamp(goal.tz, box.z0 - 3, box.z1 + 3);
+    goal.pitch = clamp(goal.pitch, 0.42, 1.4); goal.dist = clamp(goal.dist, DMIN, DMAX);
   }
   function pan(dx, dy) {
     const s = 2 * cur.dist * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / H, cy = Math.cos(cur.yaw), sy = Math.sin(cur.yaw), f = dy * s / Math.sin(cur.pitch);
@@ -149,7 +127,7 @@ export function createScene(root) {
   function used() { lastInput = performance.now(); dirty = true; if (pristine) { pristine = false; root.classList.add("used"); } }
 
   /* ---- touch + mouse ---- */
-  const pts = new Map(), picks = [], ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const pts = new Map(), ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   let tap = null, pinch = null, onTap = null;
   function gauge() {
     const [a, b] = [...pts.values()];
@@ -190,7 +168,7 @@ export function createScene(root) {
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
     const hit = ray.intersectObjects(picks, false)[0];
-    onTap(hit ? hit.object.userData.tap : null);
+    if (hit) { used(); onTap(hit.object.userData.tap, hit.point); }
   }
   el.addEventListener("pointerup", release);
   el.addEventListener("pointercancel", release);
@@ -220,13 +198,14 @@ export function createScene(root) {
     if (!active && !dirty && t - lastDraw < 33) return;               // idle animation runs at ~30 fps
     const dt = Math.min(0.1, (t - lastDraw) / 1000);
     lastDraw = t;
+    const wasDirty = dirty;
+    dirty = false;
     if (moving) { const k = 1 - Math.exp(-dt * 14); for (const key in goal) cur[key] += (goal[key] - cur[key]) * k; }
     else Object.assign(cur, goal);
     place(cur);
-    for (const f of tickers) f(t / 1000, dt);
+    for (const f of tickers) f(t / 1000, dt);                          // a ticker may ask for another frame
     renderer.render(scene, camera);
-    if (moving || dirty || labelsDirty) layoutLabels();
-    dirty = false;
+    if (moving || wasDirty || labelsDirty) layoutLabels();
   }
 
   return Object.assign(api, {
@@ -237,12 +216,11 @@ export function createScene(root) {
     relabel() { labelsDirty = true; dirty = true; },
     onTap(fn) { onTap = fn; },
     onTick(fn) { tickers.push(fn); },
-    command(k) {
-      if (k === "left") goal.yaw -= Math.PI / 6;
-      else if (k === "right") goal.yaw += Math.PI / 6;
-      else if (k === "home") home(false);
-      limit(); lastInput = performance.now(); dirty = true;
-    },
-    lookAt(x, z, dist) { goal.tx = x; goal.tz = z; if (dist) goal.dist = Math.min(goal.dist, dist); limit(); used(); },
+    /* The city tells the camera how big it is, so "fit everything" and the edges stay right. */
+    setBounds(b) { box = b; if (pristine) home(true); },
+    command(k) { if (k === "home") home(false); lastInput = performance.now(); dirty = true; },
+    lookAt(x, z, dist) { goal.tx = x; goal.tz = z; if (dist) goal.dist = Math.min(goal.dist, dist); limit(); dirty = true; },
+    /* Keep a moving thing (your character) in the middle of the view. */
+    follow(x, z) { goal.tx = x; goal.tz = z; dirty = true; },
   });
 }
